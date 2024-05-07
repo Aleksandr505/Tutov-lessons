@@ -1,5 +1,7 @@
 package org.example;
 
+import org.bouncycastle.util.encoders.Hex;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -8,6 +10,7 @@ import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static org.example.DigitalSignatureUtility.sign;
@@ -110,9 +113,15 @@ public class ChatGUI {
             generator.initialize(2048);
             pair = generator.generateKeyPair();
 
+            System.out.println("Публичный ключ: " + Hex.toHexString(pair.getPublic().getEncoded()));
+            System.out.println("Приватный ключ: " + Hex.toHexString(pair.getPrivate().getEncoded()));
+
+            System.out.println("\nХэш исходного сообщения: ");
             byte[] messageBytesFromFile = Files.readAllBytes(Paths.get("src/main/resources/sender/source_message.txt"));
             byte[] signedMessageFromFile = sign(messageBytesFromFile, "MD5", pair.getPrivate());
             Files.write(Paths.get("src/main/resources/sender/signed_message.txt"), signedMessageFromFile);
+
+            System.out.println("Зашифрованное сообщение - " + Hex.toHexString(signedMessageFromFile));
 
             informativeLabel.setText("Sender получил подписанный файл от Trent");
         } else if (Objects.equals(comboBoxTo.getSelectedItem(), User.RECEIVER.name())
@@ -137,17 +146,21 @@ public class ChatGUI {
     private void checkButtonOnClick() throws IOException {
         boolean isCorrect;
         if (Objects.equals(comboBoxToCheck.getSelectedItem(), "signed_message")) {
+            System.out.println("\nПроверочный хэш: ");
             byte[] messageBytesFromSourceFile = Files.readAllBytes(Paths.get("src/main/resources/receiver/source_message.txt"));
             byte[] messageBytesFromSignedFile = Files.readAllBytes(Paths.get("src/main/resources/receiver/signed_message.txt"));
             isCorrect = verify(messageBytesFromSourceFile, "MD5", pair.getPublic(), messageBytesFromSignedFile);
         } else {
+            System.out.println("\nПроверочный хэш неверного сообщения: ");
             byte[] messageBytesFromIncorrectSourceFile = Files.readAllBytes(Paths.get("src/main/resources/receiver/incorrect_source_message.txt"));
             byte[] messageBytesFromSignedFile = Files.readAllBytes(Paths.get("src/main/resources/receiver/signed_message.txt"));
 
-            sign(messageBytesFromIncorrectSourceFile, "MD5", pair.getPrivate());
+            //sign(messageBytesFromIncorrectSourceFile, "MD5", pair.getPrivate());
 
             isCorrect = verify(messageBytesFromIncorrectSourceFile, "MD5", pair.getPublic(), messageBytesFromSignedFile);
         }
+
+        System.out.println("Верна ли подпись: " + isCorrect);
 
         if (isCorrect) {
             informativeLabel.setText("Подпись верна!");

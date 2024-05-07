@@ -70,9 +70,12 @@ public class DigitalSignatureUtility {
             DigestInfo digestInfo = new DigestInfo(hashingAlgorithmIdentifier, newMessageHash);
             byte[] hashToEncrypt = digestInfo.getEncoded();
 
+            System.out.println("hash - " + Hex.toHexString(hashToEncrypt));
+
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, publicKey);
             byte[] decryptedMessageHash = cipher.doFinal(encryptedMessageHash);
+            System.out.println("Расшифрованный хэш: " + Hex.toHexString(decryptedMessageHash));
             return Arrays.equals(decryptedMessageHash, hashToEncrypt);
         } catch (GeneralSecurityException | IOException exp) {
             throw new SecurityException("Error during verifying", exp);
