@@ -1,4 +1,4 @@
-package org.example;
+package org.example.lab3;
 
 import org.bouncycastle.util.encoders.Hex;
 
@@ -10,11 +10,10 @@ import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Objects;
 
-import static org.example.DigitalSignatureUtility.sign;
-import static org.example.DigitalSignatureUtility.verify;
+import static org.example.lab3.DigitalSignatureUtility.sign;
+import static org.example.lab3.DigitalSignatureUtility.verify;
 
 public class ChatGUI {
 

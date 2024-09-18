@@ -1,4 +1,4 @@
-package org.example;
+package org.example.lab3;
 
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.DigestInfo;

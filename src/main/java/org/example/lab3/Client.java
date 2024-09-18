@@ -1,4 +1,4 @@
-package org.example;
+package org.example.lab3;
 
 import javax.swing.*;
 

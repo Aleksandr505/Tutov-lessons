@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 public class Main {
     public static void main(String[] args) throws IOException {
         long time = System.currentTimeMillis();
-        String sourceDirectory = "/home/aleksandr/mnt/share/DISK-T";
-        String directoryCopy = "copy";
+        String sourceDirectory = "\\\\192.168.58.107\\Shared-04";
+        String directoryCopy = "E:\\test";
         int threadsCount = 8;
 
         Stream<Path> paths = Files.walk(Paths.get(sourceDirectory));
