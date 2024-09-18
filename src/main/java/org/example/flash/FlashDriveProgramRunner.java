@@ -11,7 +11,7 @@ public class FlashDriveProgramRunner {
 
     private static final String FLASH_DRIVE_PATH = "F:";
 
-    private static final Path programPath = Path.of("F:\\signature.jar");
+    private static final Path programPath = Path.of("F:\\signature-1.0.jar");
 
     public static void main(String[] args) {
         try {
@@ -41,7 +41,7 @@ public class FlashDriveProgramRunner {
                 System.out.println("Запускаем программу с флешки: " + programPath);
 
                 if (filename.endsWith(".jar")) {
-                    ProcessBuilder pb = new ProcessBuilder(programPath.toString());
+                    ProcessBuilder pb = new ProcessBuilder("java", "-jar", programPath.toAbsolutePath().toString());
                     pb.inheritIO();
                     Process process = pb.start();
                     process.waitFor();
