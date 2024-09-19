@@ -11,7 +11,7 @@ public class FlashDriveProgramRunner {
 
     private static final String FLASH_DRIVE_PATH = "F:";
 
-    private static final Path programPath = Path.of("F:\\signature-1.0.jar");
+    private static final Path programPath = Path.of("F:\\signature-1.0-jar-with-dependencies.jar");
 
     public static void main(String[] args) {
         try {
@@ -36,7 +36,6 @@ public class FlashDriveProgramRunner {
     private static void runJavaProgramFromFlashDrive() {
         try {
             String filename = programPath.getFileName().toString();
-            System.out.println("Проверка существования программы по пути: " + programPath.getFileName());
             if (Files.exists(programPath)) {
                 System.out.println("Запускаем программу с флешки: " + programPath);
 
@@ -49,7 +48,7 @@ public class FlashDriveProgramRunner {
                     System.out.println("OOPS!");
                 }
             } else {
-                System.out.println("Файл не найден.");
+                System.out.println("Программа не найдена по пути: " + programPath);
                 checkDirectory();
             }
         } catch (IOException e) {
