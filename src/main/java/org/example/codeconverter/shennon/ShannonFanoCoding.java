@@ -1,4 +1,4 @@
-package org.example.codeconverter.huffman;
+package org.example.codeconverter.shennon;
 
 import java.util.*;
 
