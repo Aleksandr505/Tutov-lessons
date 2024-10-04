@@ -2,17 +2,7 @@ package org.example.codeconverter.shennon;
 
 import java.util.*;
 
-class ShannonFanoNode {
-    char character;
-    double probability;
-    String code;
 
-    ShannonFanoNode(char character, double probability) {
-        this.character = character;
-        this.probability = probability;
-        this.code = "";
-    }
-}
 
 public class ShannonFanoCoding {
     public static void shannonFano(List<ShannonFanoNode> nodes, int start, int end) {

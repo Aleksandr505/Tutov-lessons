@@ -2,19 +2,6 @@ package org.example.codeconverter.huffman;
 
 import java.util.*;
 
-class HuffmanNode {
-    int frequency;
-    char character;
-
-    HuffmanNode left, right;
-
-    HuffmanNode(char character, int frequency) {
-        this.character = character;
-        this.frequency = frequency;
-        left = right = null;
-    }
-}
-
 class HuffmanComparator implements Comparator<HuffmanNode> {
     public int compare(HuffmanNode x, HuffmanNode y) {
         return x.frequency - y.frequency;
@@ -22,6 +9,7 @@ class HuffmanComparator implements Comparator<HuffmanNode> {
 }
 
 public class HuffmanCoding {
+
     // Построение дерева Хаффмана
     public static HuffmanNode buildHuffmanTree(Map<Character, Integer> frequencyMap) {
         PriorityQueue<HuffmanNode> priorityQueue = new PriorityQueue<>(new HuffmanComparator());
