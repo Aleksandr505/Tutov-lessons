@@ -4,12 +4,14 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AltdsRunner {
 
     public static void main(String[] args) {
         try {
-            String baseFilePath = "D:\\repos\\lessons\\src\\main\\java\\org\\example\\altds\\";
+            String baseFilePath = "D:\\repos\\lessons\\src\\main\\resources\\altds\\";
             String adsName = "secret";
             String data = "You can see this with ADS.";
 
@@ -31,6 +33,13 @@ public class AltdsRunner {
                 } else if (option.equals("4")) {
                     deleteFileWithADS(filePath);
                 } else if (option.equals("5")) {
+                    System.out.println("Please enter new base directory path: \n");
+                    baseFilePath = reader.readLine();
+                    System.out.println("Please enter your file path for directory: " + baseFilePath + "\n");
+                    filePath = baseFilePath + reader.readLine();
+                } else if (option.equals("6")) {
+                    return;
+                } else if (option.equals("7")) {
                     return;
                 } else {
                     System.out.println("Unknown option, try again: " + option);
@@ -43,12 +52,38 @@ public class AltdsRunner {
 
     private static void writeOptions() {
         System.out.println("Please enter option: ");
-        System.out.println("Read from ADS - 0 ");
-        System.out.println("Create ADS - 1 ");
-        System.out.println("Add data to ADS - 2 ");
-        System.out.println("Clear data from ADS - 3 ");
-        System.out.println("Delete ADS - 4 ");
-        System.out.println("Exit - 5 ");
+        System.out.println("Read from ADS           : 0 ");
+        System.out.println("Create ADS              : 1 ");
+        System.out.println("Add data to ADS         : 2 ");
+        System.out.println("Clear data from ADS     : 3 ");
+        System.out.println("Delete ADS              : 4 ");
+        System.out.println("Change base directory   : 5 ");
+        System.out.println("Scan directory          : 6 ");
+        System.out.println("Exit                    : 7 ");
+    }
+
+    public static List<String> findFilesWithAlternateDataStreams(String directoryPath) {
+        List<String> filesWithADS = new ArrayList<>();
+        try {
+            // Выполнение команды dir /r для получения файлов с потоками данных
+            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", "dir /r \"" + directoryPath + "\"");
+            processBuilder.directory(new File(directoryPath));
+            Process process = processBuilder.start();
+
+            // Чтение вывода команды
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                // Поиск строк с альтернативными потоками
+                if (line.contains(":")) {
+                    filesWithADS.add(line.trim());
+                }
+            }
+            process.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return filesWithADS;
     }
 
     // Метод для создания пустого альтернативного потока
