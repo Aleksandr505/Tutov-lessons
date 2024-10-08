@@ -81,16 +81,21 @@ public class HuffmanAndShannonFanoRunner {
         String encodedString = HuffmanCoding.encode(text, huffmanCode);
         System.out.println("Закодированная строка: " + encodedString);
 
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(encodingFilepath))) {
+        writeCompressedDataToFile(encodedString, encodingFilepath);
+
+        /*try (Writer writer = new OutputStreamWriter(new FileOutputStream(encodingFilepath))) {
             writer.write(encodedString);
             System.out.println("Файл закодирован методом Хаффмана по пути:" + encodingFilepath);
         } catch (Exception e) {
             System.out.println("Не удалось записать файл, закодированный методом Хаффмана");
-        }
+        }*/
 
         String decodingFilepath = filePath.replace(".txt", "_") + "huffman_decoding" + ".txt";
         String decodedString = HuffmanCoding.decode(encodedString, root);
-        System.out.println("Раскодированная строка: " + decodedString);
+        //System.out.println("Раскодированная строка: " + decodedString);
+
+        //System.out.println("\n ///////////////////////////////////////////// \n");
+        //System.out.println(HuffmanCoding.readCompressedDataFromFile(decodingFilepath));
 
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(decodingFilepath))) {
             writer.write(decodedString);
@@ -136,17 +141,19 @@ public class HuffmanAndShannonFanoRunner {
         String encodedString = ShannonFanoCoding.encode(text, shannonFanoCode);
         System.out.println("Закодированная строка: " + encodedString);
 
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(encodingFilepath))) {
+        writeCompressedDataToFile(encodedString, encodingFilepath);
+
+        /*try (Writer writer = new OutputStreamWriter(new FileOutputStream(encodingFilepath))) {
             writer.write(encodedString);
             System.out.println("Файл закодирован методом Шенона-Фано по пути:" + encodingFilepath);
         } catch (Exception e) {
             System.out.println("Не удалось записать файл, закодированный методом Шенона-Фано");
-        }
+        }*/
 
         // Декодирование строки
         String decodingFilepath = filePath.replace(".txt", "_") + "shannon-fano_decoding" + ".txt";
         String decodedString = ShannonFanoCoding.decode(encodedString, nodes);
-        System.out.println("Раскодированная строка: " + decodedString);
+        //System.out.println("Раскодированная строка: " + decodedString);
 
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(decodingFilepath))) {
             writer.write(decodedString);
@@ -154,6 +161,41 @@ public class HuffmanAndShannonFanoRunner {
         } catch (Exception e) {
             System.out.println("Не удалось записать файл, раскодированный методом Шенона-Фано");
         }
+    }
+
+    // Преобразует строку с нулями и единицами в байты и записывает их в файл
+    public static void writeCompressedDataToFile(String binaryString, String filePath) {
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            // Добавляем нули в конец строки для кратности 8, если длина не кратна 8
+            while (binaryString.length() % 8 != 0) {
+                binaryString += "0";
+            }
+
+            // Преобразуем каждую группу из 8 символов (бит) в один байт
+            for (int i = 0; i < binaryString.length(); i += 8) {
+                String byteString = binaryString.substring(i, i + 8);
+                int byteValue = Integer.parseInt(byteString, 2); // Преобразование в десятичное
+                fos.write(byteValue);  // Запись в файл как байт
+            }
+            System.out.println("Данные успешно записаны в файл как байты.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static String readCompressedDataFromFile(String filePath) {
+        StringBuilder binaryString = new StringBuilder();
+        try (FileInputStream fis = new FileInputStream(filePath)) {
+            int byteValue;
+            while ((byteValue = fis.read()) != -1) {
+                // Преобразуем каждый байт обратно в бинарную строку длиной 8 символов
+                String byteString = String.format("%8s", Integer.toBinaryString(byteValue)).replace(' ', '0');
+                binaryString.append(byteString);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return binaryString.toString();
     }
 
 }

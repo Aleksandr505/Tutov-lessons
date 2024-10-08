@@ -1,5 +1,8 @@
 package org.example.codeconverter.huffman;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 class HuffmanComparator implements Comparator<HuffmanNode> {
@@ -48,7 +51,14 @@ public class HuffmanCoding {
     public static String encode(String text, Map<Character, String> huffmanCode) {
         StringBuilder encodedString = new StringBuilder();
         for (char character : text.toCharArray()) {
-            encodedString.append(huffmanCode.get(character));
+            String code = huffmanCode.get(character);
+
+            if (code != null) {
+                encodedString.append(code);
+            } else {
+                //throw new IllegalArgumentException("Не найдено кодирование для символа: " + character);
+            }
+            //encodedString.append(huffmanCode.get(character));
         }
         return encodedString.toString();
     }
