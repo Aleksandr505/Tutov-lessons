@@ -2,6 +2,7 @@ package org.example.codeconverter;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class HammingCode {
@@ -60,15 +61,15 @@ public class HammingCode {
 
         if (s1 == 0 && s2 == 0 && s3 == 0) {
             // Нет ошибок
-            System.out.println("Ошибок нет.");
+            System.out.println("Ошибок нет для блока - " + mapBlockToString(block));
         } else if (errorPosition > 0 && errorPosition <= 7) {
             // Исправляем одну ошибку
-            System.out.println("Обнаружена ошибка в позиции: " + errorPosition);
+            System.out.println("Обнаружена ошибка в позиции " + errorPosition + " для исходного блока - " + mapBlockToString(block));
             block[errorPosition - 1] ^= 1; // Инвертируем бит в найденной позиции
-            System.out.println("Ошибка исправлена.");
+            System.out.print("    Блок после исправления - " + mapBlockToString(block) + "\n");
         } else {
             // Если синдромы не соответствуют положению одной ошибки, сообщаем о возможной двойной ошибке
-            System.out.println("Обнаружено больше одной ошибки в блоке. Исправление невозможно.");
+            System.out.println("Обнаружено больше одной ошибки в блоке - " + mapBlockToString(block) + ". Исправление невозможно.");
         }
 
         return block;
@@ -107,6 +108,14 @@ public class HammingCode {
             System.out.println("OOPS, something went wrong!");
             e.printStackTrace();
         }
+    }
+
+    private static String mapBlockToString(int[] block) {
+        StringBuilder s = new StringBuilder();
+        for (int j : block) {
+            s.append(j);
+        }
+        return s.toString();
     }
 
     private static void writeOptions() {
