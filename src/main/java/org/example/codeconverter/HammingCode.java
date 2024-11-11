@@ -99,6 +99,31 @@ public class HammingCode {
                     writeCorrectedBlocks(baseFilePath, correctedList);
                     writeOptions();
                 } else if (option.equals("3")) {
+                    List<int[]> correctedBlocks = readCorrectedBlocks(baseFilePath);
+                    StringBuilder builder = new StringBuilder();
+                    int counter = 0;
+                    for (int[] block : correctedBlocks) {
+                        for (int j = 0; j < 7; j++) {
+                            if (j != 0 && j != 1 && j != 3) {
+                                builder.append(block[j]);
+                            }
+                        }
+                        counter++;
+                        if (counter % 2 == 0) {
+                            builder.append(",");
+                        }
+                    }
+
+                    StringBuilder result = new StringBuilder();
+                    String[] source = builder.toString().split(",");
+                    for (String byteChar : source) {
+                        byte b = (byte) Integer.parseInt(byteChar, 2);
+                        char ch = (char) b;
+                        result.append(ch);
+                    }
+
+                    System.out.println(result.toString());
+                } else if (option.equals("4")) {
                     return;
                 } else {
                     System.out.println("Unknown option, try again: " + option);
@@ -123,7 +148,8 @@ public class HammingCode {
         System.out.println("Please enter option: ");
         System.out.println("Encode text                    : 1 ");
         System.out.println("Correct text                   : 2 ");
-        System.out.println("Exit                           : 3 ");
+        System.out.println("Show corrected message         : 3 ");
+        System.out.println("Exit                           : 4 ");
         System.out.println("\n");
     }
 
@@ -166,6 +192,30 @@ public class HammingCode {
             }
         } catch (Exception e) {
             System.out.println("readEncodedBlocks error!");
+        }
+
+        return resultList;
+    }
+
+    private static List<int[]> readCorrectedBlocks(String filepath) {
+        filepath += "corrected_text.txt";
+        List<int[]> resultList = new ArrayList<>();
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filepath));
+            String s = reader.readLine();
+            String[] spl = s.split(" ");
+
+            for (String block : spl) {
+                int[] intBlock = new int[block.length()];
+                for (int i = 0; i < block.length(); i++) {
+                    String ch = String.valueOf(block.charAt(i));
+                    intBlock[i] = Integer.parseInt(ch);
+                }
+                resultList.add(intBlock);
+            }
+        } catch (Exception e) {
+            System.out.println("readCorrectedBlocks error!");
         }
 
         return resultList;
