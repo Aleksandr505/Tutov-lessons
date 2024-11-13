@@ -1,19 +1,23 @@
 package org.example.backup;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CatalogRetainer {
 
     public static void main(String[] args) {
-        Path directory = Paths.get("D:\\repos\\lessons\\src\\main\\resources\\backup");
+        Path directory = Paths.get("/Users/aleksandr/Documents/repos/university/lessons/src/main/resources/backup");
 
         try (WatchService watchService = FileSystems.getDefault().newWatchService()) {
-            directory.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_DELETE,
-                    StandardWatchEventKinds.ENTRY_MODIFY);
 
-            System.out.println("Отслеживание изменений в каталоге: " + directory);
+            registerAllDirectories(directory, watchService);
 
             while (true) {
                 WatchKey key;
@@ -30,28 +34,64 @@ public class CatalogRetainer {
                     WatchEvent.Kind<?> kind = event.kind();
 
                     Path fileName = (Path) event.context();
+                    Path fullPath = ((Path) key.watchable()).resolve(fileName);
 
                     if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                        System.out.println("Файл создан: " + fileName);
+                        if (Files.isDirectory(fullPath)) {
+                            registerNewDirectory(fullPath, watchService);
+                        } else {
+                            System.out.println("Файл создан: " + fullPath);
+                        }
                     } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
-                        System.out.println("Файл удалён: " + fileName);
+                        if (Files.isDirectory(fullPath)) {
+                            System.out.println("Директория удалена: " + fullPath);
+                        } else {
+                            System.out.println("Файл удалён: " + fullPath);
+                        }
                     } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                        System.out.println("Файл изменён: " + fileName);
+                        if (!Files.isDirectory(fullPath)) {
+                            System.out.println("Файл изменён: " + fullPath);
+                        }
                     } else {
-                        System.out.println("Не удалось класифицировать изменение: " + fileName);
+                        System.out.println("Не удалось классифицировать изменение: " + fullPath);
                     }
                 }
 
                 // Проверяем ключ, если он более не действителен, завершаем цикл
                 boolean valid = key.reset();
                 if (!valid) {
-                    System.out.println("Ключ недействителен, прекращаем отслеживание.");
-                    break;
+                    System.out.println("Отслеживаемая директория удалена");
+                    key.cancel();
                 }
             }
         } catch (IOException e) {
             System.err.println("Ошибка при доступе к каталогу: " + e.getMessage());
         }
+    }
+
+    // Рекурсивная функция для регистрации всех поддиректорий
+    private static void registerAllDirectories(Path start, WatchService watchService) throws IOException {
+        Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                dir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
+                        StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+                if (dir.equals(start)) {
+                    System.out.println("Отслеживание изменений в каталоге: " + dir);
+                } else {
+                    System.out.println("Отслеживание изменений в поддиректории: " + dir);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+
+    private static void registerNewDirectory(Path newDir, WatchService watchService) throws IOException {
+        newDir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE,
+                    StandardWatchEventKinds.ENTRY_DELETE,
+                    StandardWatchEventKinds.ENTRY_MODIFY);
+
+        System.out.println("Отслеживание изменений в новом каталоге: " + newDir);
     }
 
 }
